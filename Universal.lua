@@ -6075,61 +6075,6 @@ run(function()
 end)
 
 run(function()
-	local InfiniteJump = {Enabled = false};
-	local InfJumpVal = {Value = 'Press'};
-	local SpaceHold = false;
-	InfiniteJump = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
-		Name = "InfiniteJump",
-		HoverText = "Allows you to jump infinitely",
-		Function = function(calling)
-			if calling then
-				task.spawn(function()
-					repeat task.wait() if InfJumpVal.Value == "Hold" then SpaceHold = true end until SpaceHold == false or InfiniteJump.Enabled or InfJumpVal.Value == "Press"
-                    table.insert(InfiniteJump.Connections, inputService.InputBegan:Connect(function(Key, GPE)
-						if (Fly and Fly.Enabled) or (InfiniteFly and InfiniteFly.Enabled) or (LongJump and LongJump.Enabled) or GPE then 
-							return 
-						end
-                        if InfJumpVal.Value == "Press" and Key.KeyCode == Enum.KeyCode.Space then
-                            lplr.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-                        end
-                    end))
-
-					table.insert(InfiniteJump.Connections, inputService.InputBegan:Connect(function(Key, GPE)
-						if (Fly and Fly.Enabled) or (InfiniteFly and InfiniteFly.Enabled) or (LongJump and LongJump.Enabled) or GPE then 
-							return 
-						end
-					
-						SpaceHold = true
-							repeat task.wait()
-								if SpaceHold == true and InfJumpVal.Value == "Hold" and Key.KeyCode == Enum.KeyCode.Space then
-									lplr.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-								end
-							until SpaceHold == false or InfJumpVal.Value ~= "Hold" or (InfiniteJump and not InfiniteJump.Enabled)
-						end
-					end))
-					
-					table.insert(InfiniteJump.Connections, inputService.InputEnded:Connect(function(Key)
-						if Key.KeyCode == nil or not Key.KeyCode then
-							SpaceHold = false
-						end						
-					end))					
-				end)
-			else
-				for i,v in pairs(InfiniteJump.Connections) do
-					v:Disconnect()
-				end;
-				InfiniteJump.Connections = {};
-			end
-		end
-	})
-	InfJumpVal = InfiniteJump.CreateDropdown({
-		Name = "Mode",
-		List = {"Press", "Hold"},
-		Function = function() end
-	})
-end)
-
-run(function()
 	local FPS = {}
 	local FPSLabel
 	FPS = GuiLibrary.CreateLegitModule({
