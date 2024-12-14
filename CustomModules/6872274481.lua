@@ -102,7 +102,7 @@ end
 
 local function vapeGithubRequest(scripturl)
 	if not isfile("vape/"..scripturl) then
-		local suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/"..readfile("vape/commithash.txt").."/"..scripturl, true) end)
+		local suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/skidvape/SwiftV4ForRoblox/"..readfile("vape/commithash.txt").."/"..scripturl, true) end)
 		assert(suc, res)
 		assert(res ~= "404: Not Found", res)
 		if scripturl:find(".lua") then res = "--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.\n"..res end
@@ -147,7 +147,24 @@ local function warningNotification(title, text, delay)
 	return (suc and res)
 end
 
-local function run(func) func() end
+local function infoNotification(title, text, delay)
+	local suc, res = pcall(function()
+		local frame = GuiLibrary.CreateNotification(title, text, delay, "assets/InfoNotification.png")
+		frame.Frame.Frame.ImageColor3 = Color3.fromRGB(255, 255, 255)
+		return frame
+	end)
+	return (suc and res)
+end
+
+local function run(func)
+	local suc, res = pcall(function()
+		func();
+	end);
+
+	if res and not suc then
+		warningNotification('Vape', 'Module failed to load: '..tostring(debug.traceback(res)), 5);
+	end;
+end;
 
 local function isFriend(plr, recolor)
 	if GuiLibrary.ObjectsThatCanBeSaved["Use FriendsToggle"].Api.Enabled then
@@ -2299,10 +2316,11 @@ run(function()
 end)
 
 local autobankballoon = false
+local SpeedValue = {Value = 1}
+local FlyVerticalSpeed = {Value = 40}
 run(function()
 	local Fly = {Enabled = false}
 	local FlyMode = {Value = "CFrame"}
-	local FlyVerticalSpeed = {Value = 40}
 	local FlyVertical = {Enabled = true}
 	local FlyAutoPop = {Enabled = true}
 	local FlyAnyway = {Enabled = false}
@@ -2467,10 +2485,10 @@ run(function()
 							lastonground = true
 						end
 
-						local flyVelocity = entityLibrary.character.Humanoid.MoveDirection * (FlyMode.Value == "Normal" and FlySpeed.Value or 20)
+						local flyVelocity = entityLibrary.character.Humanoid.MoveDirection * (FlyMode.Value == "Normal" and SpeedValue.Value or 20)
 						entityLibrary.character.HumanoidRootPart.Velocity = flyVelocity + (Vector3.new(0, playerMass + (FlyUp and FlyVerticalSpeed.Value or 0) + (FlyDown and -FlyVerticalSpeed.Value or 0), 0))
 						if FlyMode.Value ~= "Normal" then
-							entityLibrary.character.HumanoidRootPart.CFrame = entityLibrary.character.HumanoidRootPart.CFrame + (entityLibrary.character.Humanoid.MoveDirection * ((FlySpeed.Value + getSpeed()) - 20)) * delta
+							entityLibrary.character.HumanoidRootPart.CFrame = entityLibrary.character.HumanoidRootPart.CFrame + (entityLibrary.character.Humanoid.MoveDirection * ((SpeedValue.Value + getSpeed()) - 20)) * delta
 						end
 					end
 				end)
@@ -2500,13 +2518,6 @@ run(function()
 		ExtraText = function()
 			return "Heatseeker"
 		end
-	})
-	FlySpeed = Fly.CreateSlider({
-		Name = "Speed",
-		Min = 1,
-		Max = 23,
-		Function = function(val) end,
-		Default = 23
 	})
 	FlyVerticalSpeed = Fly.CreateSlider({
 		Name = "Vertical Speed",
@@ -2707,8 +2718,6 @@ end)
 run(function()
 	local InfiniteFly = {Enabled = false}
 	local InfiniteFlyMode = {Value = "CFrame"}
-	local InfiniteFlySpeed = {Value = 23}
-	local InfiniteFlyVerticalSpeed = {Value = 40}
 	local InfiniteFlyVertical = {Enabled = true}
 	local InfiniteFlyUp = false
 	local InfiniteFlyDown = false
@@ -2850,10 +2859,10 @@ run(function()
 						if isnetworkowner(oldcloneroot) then
 							local playerMass = (entityLibrary.character.HumanoidRootPart:GetMass() - 1.4) * (delta * 100)
 
-							local flyVelocity = entityLibrary.character.Humanoid.MoveDirection * (InfiniteFlyMode.Value == "Normal" and InfiniteFlySpeed.Value or 20)
-							entityLibrary.character.HumanoidRootPart.Velocity = flyVelocity + (Vector3.new(0, playerMass + (InfiniteFlyUp and InfiniteFlyVerticalSpeed.Value or 0) + (InfiniteFlyDown and -InfiniteFlyVerticalSpeed.Value or 0), 0))
+							local flyVelocity = entityLibrary.character.Humanoid.MoveDirection * (InfiniteFlyMode.Value == "Normal" and SpeedValue.Value or 20)
+							entityLibrary.character.HumanoidRootPart.Velocity = flyVelocity + (Vector3.new(0, playerMass + (InfiniteFlyUp and FlyVerticalSpeed.Value or 0) + (InfiniteFlyDown and -FlyVerticalSpeed.Value or 0), 0))
 							if InfiniteFlyMode.Value ~= "Normal" then
-								entityLibrary.character.HumanoidRootPart.CFrame = entityLibrary.character.HumanoidRootPart.CFrame + (entityLibrary.character.Humanoid.MoveDirection * ((InfiniteFlySpeed.Value + getSpeed()) - 20)) * delta
+								entityLibrary.character.HumanoidRootPart.CFrame = entityLibrary.character.HumanoidRootPart.CFrame + (entityLibrary.character.Humanoid.MoveDirection * ((SpeedValue.Value + getSpeed()) - 20)) * delta
 							end
 
 							local speedCFrame = {oldcloneroot.CFrame:GetComponents()}
@@ -2925,20 +2934,6 @@ run(function()
 		ExtraText = function()
 			return "Heatseeker"
 		end
-	})
-	InfiniteFlySpeed = InfiniteFly.CreateSlider({
-		Name = "Speed",
-		Min = 1,
-		Max = 23,
-		Function = function(val) end,
-		Default = 23
-	})
-	InfiniteFlyVerticalSpeed = InfiniteFly.CreateSlider({
-		Name = "Vertical Speed",
-		Min = 1,
-		Max = 100,
-		Function = function(val) end,
-		Default = 44
 	})
 	InfiniteFlyVertical = InfiniteFly.CreateToggle({
 		Name = "Y Level",
@@ -3292,10 +3287,10 @@ run(function()
 										entityInstance = plr.Character,
 										validate = {
 											raycast = {
-												cameraPosition = attackValue(root.Position),
-												cursorDirection = attackValue(CFrame.new(selfpos, root.Position).lookVector)
+												cameraPosition = attackValue(root.Position + plr.Character.Humanoid.MoveDirection),
+												cursorDirection = attackValue(CFrame.new(selfpos, root.Position + plr.Character.Humanoid.MoveDirection).lookVector)
 											},
-											targetPosition = attackValue(root.Position),
+											targetPosition = attackValue(root.Position + plr.Character.Humanoid.MoveDirection),
 											selfPosition = attackValue(selfpos)
 										}
 									})
@@ -3536,7 +3531,7 @@ run(function()
 		Function = function(callback)
 			if callback then
 				--context issues moment
-			--[[	killaurarangecirclepart = Instance.new("MeshPart")
+				killaurarangecirclepart = Instance.new("MeshPart")
 				killaurarangecirclepart.MeshId = "rbxassetid://3726303797"
 				killaurarangecirclepart.Color = Color3.fromHSV(killauracolor["Hue"], killauracolor["Sat"], killauracolor.Value)
 				killaurarangecirclepart.CanCollide = false
@@ -3546,7 +3541,7 @@ run(function()
 				if Killaura.Enabled then
 					killaurarangecirclepart.Parent = gameCamera
 				end
-				bedwars.QueryUtil:setQueryIgnored(killaurarangecirclepart, true)]]
+				bedwars.QueryUtil:setQueryIgnored(killaurarangecirclepart, true)
 			else
 				if killaurarangecirclepart then
 					killaurarangecirclepart:Destroy()
@@ -4331,7 +4326,6 @@ local antivoidvelo
 run(function()
 	local Speed = {Enabled = false}
 	local SpeedMode = {Value = "CFrame"}
-	local SpeedValue = {Value = 1}
 	local SpeedValueLarge = {Value = 1}
 	local SpeedJump = {Enabled = false}
 	local SpeedJumpHeight = {Value = 20}
@@ -6412,7 +6406,19 @@ run(function()
 						type = "InventorySelectHotbarSlot",
 						slot = slot
 					})
+					RunLoops:BindToHeartbeat('NoNametag', function()
+						pcall(function()
+							task.wait(0.001)
+							lplr.character.Head.Nametag:Destroy()
+						end)
+					end)
+					task.spawn(function()
+						lplr.PlayerGui.KillFeedGui.Parent = game.Workspace
+					end)
 				end)
+			else
+				RunLoops:UnbindFromHeartbeat('NoNametag')
+				lplr.PlayerGui.KillFeedGui.Parent = lplr.PlayerGui
 			end
 		end
 	})
@@ -7951,7 +7957,7 @@ run(function()
 	})
 end)
 
-run(function()
+--[[run(function()
 	local tiered = {}
 	local nexttier = {}
 
@@ -7991,7 +7997,7 @@ run(function()
 		end,
 		HoverText = "Allows you to access tiered items early."
 	})
-end)
+end)]]
 
 local lagbackedaftertouch = false
 run(function()
