@@ -6076,7 +6076,6 @@ end)
 
 run(function()
 	local InfiniteJump = {Enabled = false};
-	local InfJumpVal = {Value = 'Press'};
 	InfiniteJump = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = "InfiniteJump",
 		HoverText = "Allows you to jump infinitely",
@@ -6087,7 +6086,7 @@ run(function()
 						if (Fly and Fly.Enabled) or (InfiniteFly and InfiniteFly.Enabled) or (LongJump and LongJump.Enabled) or GPE then 
 							return 
 						end
-                        if InfJumpVal.Value == "Press" and Key.KeyCode == Enum.KeyCode.Space then
+                        if Key.KeyCode == Enum.KeyCode.Space then
                             lplr.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
                         end
                     end))			
@@ -6099,11 +6098,6 @@ run(function()
 				InfiniteJump.Connections = {};
 			end
 		end
-	})
-	InfJumpVal = InfiniteJump.CreateDropdown({
-		Name = "Mode",
-		List = {"Press"},
-		Function = function() end
 	})
 end)
 
