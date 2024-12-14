@@ -6075,6 +6075,39 @@ run(function()
 end)
 
 run(function()
+	local InfiniteJump = {Enabled = false};
+	local InfJumpVal = {Value = 'Press'};
+	InfiniteJump = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+		Name = "InfiniteJump",
+		HoverText = "Allows you to jump infinitely",
+		Function = function(calling)
+			if calling then
+				task.spawn(function()
+                    table.insert(InfiniteJump.Connections, inputService.InputBegan:Connect(function(Key, GPE)
+						if (Fly and Fly.Enabled) or (InfiniteFly and InfiniteFly.Enabled) or (LongJump and LongJump.Enabled) or GPE then 
+							return 
+						end
+                        if InfJumpVal.Value == "Press" and Key.KeyCode == Enum.KeyCode.Space then
+                            lplr.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                        end
+                    end))			
+				end)
+			else
+				for i,v in pairs(InfiniteJump.Connections) do
+					v:Disconnect()
+				end;
+				InfiniteJump.Connections = {};
+			end
+		end
+	})
+	InfJumpVal = InfiniteJump.CreateDropdown({
+		Name = "Mode",
+		List = {"Press"},
+		Function = function() end
+	})
+end)
+
+run(function()
 	local FPS = {}
 	local FPSLabel
 	FPS = GuiLibrary.CreateLegitModule({
